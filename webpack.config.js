@@ -1,33 +1,24 @@
-// Example webpack configuration with asset fingerprinting in production.
 'use strict';
 
 var path = require('path');
 var webpack = require('webpack');
-
-// must match config.webpack.dev_server.port
-var devServerPort = 3810;
-// set TARGET=production on the environment to add asset fingerprints
 var production = process.env.TARGET === 'production';
 
 var config = {
-  entry: [
-    'webpack-dev-server/client?http://localhost:'+devServerPort,
-    'webpack/hot/only-dev-server',
-    './assets/javascripts/app'
-  ],
-
+  entry:  __dirname + '/assets/javascripts/app.js',
   output: {
-    // Build assets directly in to public/webpack/, let webpack know
-    // that all webpacked assets start with webpack/
-
-    // must match config.webpack.output_dir
-    path: path.join(__dirname, 'dist'),
-    filename: production ? '[name]-[chunkhash].js' : 'app.js'
+    path: path.join(__dirname, 'public/js'),
+    filename: 'main.js'
   },
 
   module: {
     loaders: [
-      { test: /.js$/, loader: 'babel-loader', exclude: /(node_modules|bower_components)/ }
+      { test: /.js$/, loader: 'babel-loader',
+        query: {
+          presets: ['react', 'es2015']
+        },
+        exclude: /(node_modules|bower_components)/
+      }
     ]
   },
 
@@ -62,12 +53,7 @@ if (production) {
     new webpack.optimize.OccurenceOrderPlugin()
   );
 } else {
-  config.devServer = {
-    port: devServerPort,
-    headers: { 'Access-Control-Allow-Origin': "*" }
-  };
-  config.output.publicPath = '//localhost:' + devServerPort + '/dist';
-  // Source maps
+  config.output.publicPath = './dist';
   config.devtool = 'cheap-module-eval-source-map';
 }
 

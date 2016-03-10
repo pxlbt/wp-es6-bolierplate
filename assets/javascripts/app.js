@@ -1,1 +1,2 @@
-console.log ('app!!!!')
+import d3 from "d3"
+console.log (d3)
